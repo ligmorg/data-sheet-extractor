@@ -1,3 +1,4 @@
+import argparse
 import pandas as pd
 from produto import Produto
 
@@ -34,9 +35,14 @@ def extract_products(file, sheet, produtos):
 
 
 def main():
-    excel_file = pd.ExcelFile("mapa.xlsx")
+    parser = argparse.ArgumentParser(description="Extrai produtos de um arquivo Excel")
+    parser.add_argument("arquivo", help="caminho do arquivo Excel")
+    args = parser.parse_args()
+
+    excel_file = pd.ExcelFile(args.arquivo)
     sheets = excel_file.sheet_names
     produtos = []
+
     for sheet in sheets:
         extract_products("mapa.xlsx", sheet, produtos)
 
