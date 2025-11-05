@@ -3,6 +3,15 @@ import pandas as pd
 from produto import Produto
 
 
+# lembrar de procurar sempre o ultima aparicao na linha (ultima cedula)
+#TODO:  integrar com API para buscar o nome certo do produto pelo EAN (https://www.ean-search.org/)
+
+variacoes_descricao = [
+    "prod",
+    "descrição",
+    "desc"
+]
+
 variacoes_codigo_barras = [
     "Codigo_Barra",
     "Código_Barra",
@@ -20,8 +29,8 @@ variacoes_codigo_barras = [
     "EAN"
 ]
 
-def get_column(df: pd.DataFrame):
-    colunas_lower = [col.lower() for col in variacoes_codigo_barras]
+def get_column(df: pd.DataFrame, dictionary):
+    colunas_lower = [col.lower() for col in dictionary]
 
     for col in df.columns:
         for possivel_col in colunas_lower:
@@ -47,13 +56,13 @@ def extract_products(file, sheet, produtos):
     df = pd.read_excel(file, sheet_name=sheet, header=None)
     header_index = get_header_index(df)
     df = pd.read_excel(file, sheet_name=sheet, header=header_index)
-    ean_column = get_column(df)
+    ean_column = get_column(df, variacoes_codigo_barras)
+    description_column = get_column(df, variacoes_descricao)
     print(sheet)
     if not df.empty:
-        print(ean_column)
         for index, row in df.iterrows():
             if not pd.isna(row[ean_column]) and produto_unico(row[ean_column], produtos):
-                produtos.append(Produto(row[ean_column]))
+                produtos.append(Produto(row[ean_column], row[description_column]))
     else:
         print(f"nao foi encontrado o EAN da sheet {sheet}")
 
