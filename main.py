@@ -37,6 +37,11 @@ variacoes_codigo_barras = [
     "EAN"
 ]
 
+def find_product(ean: str, lista_prods: list[Produto]):
+    for prod in lista_prods:
+        if int(prod.ean) == int(ean):
+            return prod
+
 def get_column(df: pd.DataFrame, dictionary):
     colunas_lower = [col.lower() for col in dictionary]
 
@@ -61,12 +66,8 @@ def ean_valido(ean: str) -> bool:
 
 
 def produto_unico(ean: str, lista_prods: list[Produto]) -> bool:
-    for prod in lista_prods:
-        try:
-            if int(prod.ean) == int(ean):
-                return False
-        except (ValueError, TypeError):
-            continue
+    if find_product(ean, lista_prods):
+        return False
 
     return True
 
@@ -86,8 +87,11 @@ def extract_products(file, sheet, produtos):
 
     if not df.empty:
         for index, row in df.iterrows():
-            if not pd.isna(row[ean_column]) and ean_valido(row[ean_column]) and produto_unico(row[ean_column], produtos):
-                produtos.append(Produto(row[ean_column], row[description_column], row[estoque_column]))
+            if not pd.isna(row[ean_column]) and ean_valido(row[ean_column]):
+                if produto_unico(row[ean_column], produtos):
+                    produtos.append(Produto(row[ean_column], row[description_column], row[estoque_column]))
+
+
     else:
         print(f"nao foi encontrado o EAN da sheet {sheet}")
 
