@@ -155,9 +155,14 @@ def main():
     errors = []
 
     for sheet in tqdm(sheets):
-        errors.append(extract_products("mapa.xlsx", sheet, produtos))
+        sheet_errors = extract_products("mapa.xlsx", sheet, produtos) 
+        if sheet_errors:
+            errors.append(sheet_errors)
 
-    print(errors)
+    print(f"{len(errors)} erros encontrados:")
+
+    for e in errors:
+        print(e)
 
     print(f"{len(produtos)} produtos encontrados:")
     for p in produtos:
