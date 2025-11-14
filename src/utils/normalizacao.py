@@ -18,7 +18,6 @@ def normalizar_mes(valor):
     )
 
     match = re.match(r"^0?(\d{1,2})", texto)
-    print(match)
 
     #TODO: verificar se o numero tem so dois digitos msm
     if match:
