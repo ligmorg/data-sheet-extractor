@@ -7,6 +7,20 @@ def remove_numeros_e_simbolos(texto: str):
 def remove_letras(texto: str):
     return re.sub(r'[A-Za-z]', '', texto)
 
+def extrai_data_mes_ano(texto: str):
+    result = re.compile(
+        r"(?<!\d)"
+        r"(0?[1-9]|1[0-2])"
+        r"[\s./-]?"
+        r"(20\d{2}|\d{2})"
+        r"(?!\d)"
+    ).search(texto)
+
+    if result:
+        return result.group(0)
+
+    return None
+
 def normalizar_mes(valor):
     if not valor:
         return None
@@ -17,9 +31,10 @@ def normalizar_mes(valor):
         if unicodedata.category(c) != 'Mn'
     )
 
-    match = re.match(r"^0?(\d{1,2})", texto)
+    data_numerica = extrai_data_mes_ano(texto)
 
-    #TODO: verificar se o numero tem so dois digitos msm
+    match = re.match(r"^0?(\d{1,2})", str(data_numerica))
+
     if match:
         numero = int(match.group(1))
         if 1 <= numero <= 12:
