@@ -5,7 +5,7 @@ def remove_numeros_e_simbolos(texto: str):
     return re.sub(r'[^a-zA-ZÀ-ÿ\s]', '', texto)
 
 def remove_letras(texto: str):
-    return re.sub(r'[^a-zA-ZÀ-ÿ]', '', texto)
+    return re.sub(r'[A-Za-z]', '', texto)
 
 def normalizar_mes(valor):
     if not valor:
