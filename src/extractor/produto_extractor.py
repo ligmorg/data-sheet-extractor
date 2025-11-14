@@ -84,7 +84,6 @@ def extract_products(file, sheet, produtos, vendas):
     # [may/2025, jun/2025, ...]
     
 
-    print(sheet)
     for _, row in df.iterrows():
         ean = row.get(ean_column_name)
         if pd.notna(ean) and ean_valido(ean):
@@ -103,7 +102,6 @@ def extract_products(file, sheet, produtos, vendas):
                 else:
                     errors.append(f"estoque inválido")
 
-            print(meses)
             vendas = extract_vendas(prod, meses, row)
 
     return errors
