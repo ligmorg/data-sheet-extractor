@@ -83,6 +83,8 @@ def extract_products(file, sheet, produtos, vendas):
     meses = get_months_columns(df.columns)
     # [may/2025, jun/2025, ...]
     
+    if not meses:
+        errors.append("nao foram encontrados vendas dos produto")
 
     for _, row in df.iterrows():
         ean = row.get(ean_column_name)
