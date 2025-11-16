@@ -46,5 +46,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # print(normalizar_mes("un. 5/25"))
     main()

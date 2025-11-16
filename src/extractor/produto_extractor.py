@@ -82,6 +82,10 @@ def extract_products(file, sheet, produtos, vendas):
 
     meses = get_months_columns(df.columns)
     # [may/2025, jun/2025, ...]
+
+    if not estoque_column_name:
+        estoque_column_name = "estoque"
+        df.rename(columns={df.columns[estoque_column_index]: estoque_column_name}, inplace=True)
     
     if not meses:
         errors.append("nao foram encontrados vendas dos produto")
@@ -92,7 +96,6 @@ def extract_products(file, sheet, produtos, vendas):
             if produto_unico(ean, produtos):
                 prod = Produto(str(ean), row[description_column_name], row[estoque_column_name])
                 produtos.append(prod)
-                
 
             else:
                 if estoque_valido:
