@@ -103,7 +103,7 @@ def extract_products(file, sheet, produtos, vendas):
                         prod = find_product(ean, produtos)
                         prod.estoque += int(row[estoque_column_name])
                     except Exception:
-                        errors.append(f"Erro ao inserir estoque no produto {prod.descricao}")
+                        pass
                 else:
                     errors.append(f"estoque inválido")
 

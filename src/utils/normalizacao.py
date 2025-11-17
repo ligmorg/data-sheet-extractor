@@ -2,24 +2,30 @@ import unicodedata
 import re
 
 def remove_numeros_e_simbolos(texto: str):
-    return re.sub(r'[^a-zA-ZÀ-ÿ\s]', '', texto)
+    return re.sub(r'[^a-zA-ZÀ-ÿ\s]', ' ', texto)
 
 def remove_letras(texto: str):
     return re.sub(r'[A-Za-z]', '', texto)
+
+def get_mes_da_data(data):
+    if not data:
+        return None
+
+    return re.match(r"^0?(\d{1,2})", str(data))
 
 def extrai_data_mes_ano(texto: str):
     result = re.compile(
         r"(?<!\d)"
         r"(0?[1-9]|1[0-2])"
-        r"[\s./-]?"
+        r"[\s./-]+"
         r"(20\d{2}|\d{2})"
         r"(?!\d)"
     ).search(texto)
 
-    if result:
-        return result.group(0)
+    if not result:
+        return None
 
-    return None
+    return result.group(0)
 
 def normalizar_mes(valor):
     if not valor:
@@ -33,7 +39,7 @@ def normalizar_mes(valor):
 
     data_numerica = extrai_data_mes_ano(texto)
 
-    match = re.match(r"^0?(\d{1,2})", str(data_numerica))
+    match = get_mes_da_data(data_numerica)
 
     if match:
         numero = int(match.group(1))
