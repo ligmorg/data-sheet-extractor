@@ -6,6 +6,7 @@ from models.produto import Produto
 from models.venda_mensal import VendaMensal
 from utils.normalizacao import normalizar_mes
 
+variacoes_meses = ["qtd", "quant", "unidade"]
 variacoes_descricao = ["prod", "descrição", "desc"]
 variacoes_estoque = ["disp", "dsp", "estoque", "total", "saldo"]
 variacoes_codigo_barras = [
@@ -36,6 +37,30 @@ def get_header_index(df: pd.DataFrame) -> int:
     header_index = mask.any(axis=1)[::-1].idxmax()
     return header_index
 
+def existe_duplicatas(mask: pd.Series) -> bool:
+    return mask.index.duplicated().any()
+
+def get_months_columns_indexes(df:pd.DataFrame):
+    mask = df.apply(lambda col: normalizar_mes(str(col)))
+
+    meses = []
+
+    indexes = mask.index
+    if existe_duplicatas(mask[mask.notna()]):
+        for idx, i in enumerate(indexes):
+            if str(i).lower() in variacoes_meses:
+                meses.append([idx, mask.iloc[idx]])
+    else:
+        for idx, i in enumerate(indexes):
+            if pd.notna(mask.iloc[idx]):
+                meses.append([idx, mask.iloc[idx]])
+
+
+    indices_numericos = [[index, int(mes)] for index, mes in meses]
+
+    return indices_numericos
+
+
 def get_months_columns(columns):
     meses = []
     for col in columns:
@@ -62,6 +87,7 @@ def extract_products(file, sheet, produtos, vendas):
     errors = []
     df = pd.read_excel(file, sheet_name=sheet, header=None)
     df = df.ffill()
+    df = df.ffill(axis=1)
 
     header_index = get_header_index(df)
     df.columns = df.iloc[header_index]
@@ -72,16 +98,23 @@ def extract_products(file, sheet, produtos, vendas):
 
     description_column_name = get_column_name(df, variacoes_descricao)
     estoque_column_name = get_column_name(df, variacoes_estoque)
-
     estoque_column_index = get_column_index(df, variacoes_estoque)
-
     estoque_valido = valida_coluna_estoque(estoque_column_index, sheet)
+
+
+    months_columns_tuples = get_months_columns_indexes(df)
+
+    resultado = [sub for sub in months_columns_tuples if sub[0] != estoque_column_index]
+
 
     drop_header = header_index + 1
     df = df[drop_header:].reset_index(drop=True)
 
-    meses = get_months_columns(df.columns)
+    meses = [sub[1] for sub in resultado]
     # [may/2025, jun/2025, ...]
+    
+    for index, mes in resultado:
+        df.rename(columns={df.columns[index]: mes}, inplace=True)
 
     if not estoque_column_name:
         estoque_column_name = "estoque"
