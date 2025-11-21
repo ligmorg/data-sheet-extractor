@@ -15,6 +15,9 @@ variacoes_codigo_barras = [
     "codigo de barra", "código de barra", "cod. barra", "codbarra",
     "codigo_barra", "codigo_bar", "codbar", "EAN"
 ]
+def cria_mascara_ocorrencia(df: pd.DataFrame, dictionary):
+    pattern = '|'.join([v.replace('.', r'\.') for v in dictionary])
+    return df.apply(lambda col: col.astype(str).str.contains(pattern, case=False, na=False, regex=True))
 
 def get_column_name(df: pd.DataFrame, dictionary):
     colunas_lower = [col.lower() for col in dictionary]
@@ -24,8 +27,7 @@ def get_column_name(df: pd.DataFrame, dictionary):
                 return col
 
 def get_column_index(df: pd.DataFrame, dictionary):
-    pattern = '|'.join([v.replace('.', r'\.') for v in dictionary])
-    mask = df.apply(lambda col: col.astype(str).str.contains(pattern, case=False, na=False, regex=True))
+    mask = cria_mascara_ocorrencia(df, dictionary)
     any_match = mask.any(axis=0)
     if not any_match.any():
         return -1
@@ -33,8 +35,8 @@ def get_column_index(df: pd.DataFrame, dictionary):
     return df.columns.get_loc(column_index)
 
 def get_header_index(df: pd.DataFrame) -> int:
-    pattern = '|'.join([v.replace('.', r'\.') for v in variacoes_codigo_barras])
-    mask = df.apply(lambda col: col.astype(str).str.contains(pattern, case=False, na=False, regex=True))
+    mask = cria_mascara_ocorrencia(df, variacoes_codigo_barras)
+
     header_index = mask.any(axis=1)[::-1].idxmax()
     return header_index
 
