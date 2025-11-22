@@ -28,11 +28,12 @@ def get_column_name(df: pd.DataFrame, dictionary):
 
 def get_column_index(df: pd.DataFrame, dictionary):
     mask = cria_mascara_ocorrencia(df, dictionary)
+
     any_match = mask.any(axis=0)
     if not any_match.any():
         return -1
-    column_index = mask.any(axis=0)[::-1].idxmax()
-    return df.columns.get_loc(column_index)
+    index_linha = mask.any(axis=1)[::-1].idxmax()
+    return df.columns.get_loc(mask.iloc[index_linha][::-1].idxmax())
 
 def get_header_index(df: pd.DataFrame) -> int:
     mask = cria_mascara_ocorrencia(df, variacoes_codigo_barras)
@@ -97,7 +98,7 @@ def extract_vendas(produto, meses, valores):
     return [*vendas]
 
 
-def extract_products(file, sheet, produtos, vendas):
+def extract_products(file: str, sheet: str, produtos: list, vendas: list):
     errors = []
     df = pd.read_excel(file, sheet_name=sheet, header=None)
     df = df.ffill()
@@ -111,6 +112,7 @@ def extract_products(file, sheet, produtos, vendas):
         return [f"não foi encontrado o EAN"]
 
     description_column_name = get_column_name(df, variacoes_descricao)
+
     estoque_column_name = get_column_name(df, variacoes_estoque)
     estoque_column_index = get_column_index(df, variacoes_estoque)
     estoque_valido = valida_coluna_estoque(estoque_column_index, sheet)
@@ -127,7 +129,6 @@ def extract_products(file, sheet, produtos, vendas):
         meses = [mes[1] for mes in meses_backup]
 
     if not estoque_column_name:
-
         estoque_column_name = "estoque"
         df.rename(columns={df.columns[estoque_column_index]: estoque_column_name}, inplace=True)
     
