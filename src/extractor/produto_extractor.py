@@ -95,7 +95,7 @@ def extract_vendas(produto, meses, valores):
         vendas.append(venda)
         produto.adiciona_venda(venda)
 
-    return [*vendas]
+    return vendas
 
 
 def extract_products(file: str, sheet: str, produtos: list, vendas: list):
@@ -123,7 +123,7 @@ def extract_products(file: str, sheet: str, produtos: list, vendas: list):
     drop_header = header_index + 1
     df = df[drop_header:].reset_index(drop=True)
 
-    meses = get_months_columns(df.columns)    # [may/2025, jun/2025, ...]
+    meses = get_months_columns(df.columns)
     
     if not meses:
         meses = [mes[1] for mes in meses_backup]
@@ -152,6 +152,6 @@ def extract_products(file: str, sheet: str, produtos: list, vendas: list):
                 else:
                     errors.append(f"estoque inválido")
 
-            vendas = extract_vendas(prod, meses, row)
+            vendas.extend(extract_vendas(prod, meses, row))
 
     return errors
