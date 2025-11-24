@@ -34,6 +34,14 @@ class Produto:
 
         return total
 
+    def vendas_por_mes(self, mes):
+        total = 0
+        for venda in self.vendas:
+            if venda.mes == mes:
+                total += venda.quantidade
+
+        return total
+
     def __str__(self):
         return f"Produto(EAN={self.ean}, Desc={self.descricao}, Estoque={self.estoque}, Vendas={self.vendas_total()})"
 

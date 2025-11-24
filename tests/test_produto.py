@@ -61,6 +61,26 @@ def test_produto_vendas_total():
 
     assert p.vendas_total() == 50
 
+def test_produto_vendas_por_mes():
+    p = Produto("1234567890123", "Produto X", 10)
+
+    v1 = VendaMensal(p, 2024, 6, 20)
+    v2 = VendaMensal(p, 2024, 6, 120)
+
+    p.adiciona_venda(v1)
+    p.adiciona_venda(v2)
+
+    assert p.vendas_por_mes(6) == 140
+
+def test_produto_vendas_por_mes_sem_mes():
+    p = Produto("1234567890123", "Produto X", 10)
+
+    v1 = VendaMensal(p, 2024, 6, 20)
+
+    p.adiciona_venda(v1)
+
+    assert p.vendas_por_mes(5) == 0
+
 
 def test_produto_str():
     p = Produto("1234567890123", "Produto X", 10)
