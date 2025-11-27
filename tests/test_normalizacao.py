@@ -15,8 +15,17 @@ def test_extrai_data_mes_ano():
     assert extrai_data_mes_ano("ESTOQUE    CD 02.06.2025") == "02.06.2025"
 
 
+def test_extrai_data_mes_ano_sem_data():
+    assert extrai_data_mes_ano("") == None
+
+
 def test_get_mes_da_data():
     assert get_mes_da_data("11/25") == 11
+
+
+def test_get_mes_da_data_sem_match():
+    assert get_mes_da_data("teste") == None
+
 
 def test_normalizar_mes():
     assert normalizar_mes("02.06.2025") == 6
